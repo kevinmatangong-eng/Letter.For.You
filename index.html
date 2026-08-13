@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Letter For You</title>
+  <style>
+    :root {
+      --snow: #e8f4f8;
+      --ice: #c5dce6;
+      --deep-ice: #a8c5d4;
+      --paper: #f7f1e3;
+      --ink: #2c2c2c;
+      --shadow: rgba(30, 50, 70, 0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: linear-gradient(180deg, #d4e8f0 0%, #e8f4f8 40%, #f0f7fa 100%);
+      color: var(--ink);
+      touch-action: manipulation;
+    }
+
+    /* Soft atmospheric fog */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.4) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Distant snowy landscape */
+    .landscape {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 35%;
+      background: linear-gradient(180deg, transparent 0%, rgba(200, 220, 230, 0.3) 40%, rgba(180, 205, 220, 0.5) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .landscape::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: -10%;
+      width: 120%;
+      height: 60%;
+      background: 
+        radial-gradient(ellipse 40% 30% at 20% 100%, rgba(190, 210, 225, 0.6) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 70% 100%, rgba(185, 205, 220, 0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 25% at 45% 100%, rgba(195, 215, 230, 0.4) 0%, transparent 70%);
+    }
+
+    /* Snow container */
+    .snow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .snowflake {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: fall linear infinite;
+      box-shadow: 0 0 2px rgba(255,255,255,0.8);
+    }
+
+    .ice-crystal {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,230,245,0.6));
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      opacity: 0.6;
+      animation: drift linear infinite;
+      filter: blur(0.3px);
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-10vh) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.7; }
+      90% { opacity: 0.5; }
+      100% {
+        transform: translateY(110vh) translateX(var(--drift)) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translateY(-5vh) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      15% { opacity: 0.6; }
+      85% { opacity: 0.4; }
+      100% {
+        transform: translateY(105vh) translateX(var(--drift)) rotate(180deg);
+        opacity: 0;
+      }
+    }
+
+    /* Book container */
+    .scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      perspective: 2000px;
+    }
+
+    .book-wrapper {
+      position: relative;
+      width: min(92vw, 420px);
+      height: min(78vh, 620px);
+      max-height: 620px;
+      transform-style: preserve-3d;
+    }
+
+    .book {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      box-shadow: 
+        0 25px 50px -12px rgba(30, 50, 70, 0.35),
+        0 10px 20px -5px rgba(30, 50, 70, 0.2),
+        0 0 0 1px rgba(255,255,255,0.1);
+      border-radius: 2px 8px 8px 2px;
+    }
+
+    /* Book cover base (left side spine feel) */
+    .book::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      background: linear-gradient(90deg, #d4c9b0, #e8dfc8);
+      border-radius: 2px 0 0 2px;
+      z-index: 20;
+      box-shadow: inset -2px 0 4px rgba(0,0,0,0.08);
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      background: var(--paper);
+      background-image: 
+        linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 8%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      border-radius: 1px 6px 6px 1px;
+      padding: 8% 9% 8% 11%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      transform-origin: left center;
+      transition: transform 1.1s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 1.1s ease;
+      backface-visibility: hidden;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.03);
+    }
+
+    .page.flipped {
+      transform: rotateY(-180deg);
+      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+      z-index: 1;
+    }
+
+    .page-content {
+      font-size: clamp(15px, 3.8vw, 17.5px);
+      line-height: 1.72;
+      color: #2a2a2a;
+      letter-spacing: 0.01em;
+      text-align: left;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    /* Slight paper aging */
+    .page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 20%, rgba(220, 200, 160, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* Tap zones */
+    .tap-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 50;
+      cursor: pointer;
+    }
+
+    .tap-left { left: 0; }
+    .tap-right { right: 0; }
+
+    /* Subtle page number */
+    .page-num {
+      position: absolute;
+      bottom: 4%;
+      right: 8%;
+      font-size: 11px;
+      color: #8a8070;
+      opacity: 0.6;
+      font-family: Georgia, serif;
+    }
+
+    /* Soft ambient glow from snow */
+    .book-wrapper::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 10%;
+      width: 80%;
+      height: 40px;
+      background: radial-gradient(ellipse, rgba(255,255,255,0.5) 0%, transparent 70%);
+      filter: blur(8px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Instruction hint (fades) */
+    .hint {
+      position: fixed;
+      bottom: 6%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: #6a7a85;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      z-index: 30;
+      pointer-events: none;
+      letter-spacing: 0.05em;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+    }
+
+    .hint.visible {
+      opacity: 0.7;
+    }
+
+    /* Responsive adjustments */
+    @media (max-height: 600px) {
+      .book-wrapper {
+        height: min(85vh, 520px);
+      }
+      .page-content {
+        font-size: clamp(13.5px, 3.5vw, 15.5px);
+        line-height: 1.6;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .page {
+        padding: 7% 7% 7% 10%;
+      }
+      .page-content {
+        font-size: 14.5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="landscape"></div>
+  <div class="snow" id="snow"></div>
+
+  <div class="scene">
+    <div class="book-wrapper">
+      <div class="book" id="book">
+        <!-- Pages will be injected here -->
+      </div>
+      <div class="tap-zone tap-left" id="tapLeft"></div>
+      <div class="tap-zone tap-right" id="tapRight"></div>
+    </div>
+  </div>
+
+  <div class="hint" id="hint">Tap the right side to turn the page</div>
+
+  <script>
+    const pages = [
+      `Hey, I just want to make one last deal with you, and I’m going to be completely honest about it.`,
+
+      `I’m currently working on something that means a lot to me. For the first time in a while, I feel like I’m starting to understand that maybe my existence isn’t meaningless or absurd. Maybe I simply haven’t discovered what I’m meant to find yet.`,
+
+      `So this is my deal. You can answer yes, no, or give me whatever answer you genuinely feel is right.`,
+
+      `I’m going to disappear for 165 days. I know you may have wished for me to disappear from your life completely, and I understand that. But there’s something I promised myself after everything we shared throughout our relationship, and I want to keep that promise. I don’t want the ending of our relationship to be defined by becoming strangers.`,
+
+      `After those 165 days, I may contact you again. There’s also a chance I won’t. I honestly don’t know what the future will bring, and I don’t want to make any promises about something I can’t control.`,
+
+      `If you happen to have a boyfriend by then, I hope you can tell him about this agreement if you think it’s necessary. I don’t want to cause problems for you or for anyone else. This isn’t meant to threaten you, pressure you, or interfere with your life. I’m simply giving myself these 165 days to work on something important.`,
+
+      `There’s also something I want to give you. It’s a secret for now, so I won’t tell you what it is. Whether I actually get the chance to give it to you is something I don’t know yet.\n\nSo, goodbye for now. Take care of yourself, and I genuinely hope life treats you well. Whatever happens after these 165 days, I’ll accept it.`
+    ];
+
+    const book = document.getElementById('book');
+    let currentPage = 0;
+    let isAnimating = false;
+
+    // Create pages (stacked, top page is highest z)
+    function buildPages() {
+      pages.forEach((text, i) => {
+        const page = document.createElement('div');
+        page.className = 'page';
+        page.dataset.index = i;
+        page.style.zIndex = pages.length - i;
+
+        const content = document.createElement('div');
+        content.className = 'page-content';
+        content.textContent = text;
+
+        const num = document.createElement('div');
+        num.className = 'page-num';
+        num.textContent = `${i + 1}`;
+
+        page.appendChild(content);
+        page.appendChild(num);
+        book.appendChild(page);
+      });
+    }
+
+    function updateVisibility() {
+      const allPages = document.querySelectorAll('.page');
+      allPages.forEach((page, i) => {
+        if (i < currentPage) {
+          page.classList.add('flipped');
+          page.style.zIndex = i; // flipped pages go behind
+        } else {
+          page.classList.remove('flipped');
+          page.style.zIndex = pages.length - i;
+        }
+      });
+    }
+
+    function goNext() {
+      if (isAnimating || currentPage >= pages.length - 1) return;
+      isAnimating = true;
+      currentPage++;
+      updateVisibility();
+      playPageSound();
+      setTimeout(() => { isAnimating = false; }, 1150);
+    }
+
+    function goPrev() {
+      if (isAnimating || currentPage <= 0) return;
+      isAnimating = true;
+      currentPage--;
+      updateVisibility();
+      playPageSound();
+      setTimeout(() => { isAnimating = false; }, 1150);
+    }
+
+    // Subtle paper sound using Web Audio API
+    let audioCtx;
+    function playPageSound() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+
+        // Soft noise burst for paper
+        const bufferSize = audioCtx.sampleRate * 0.15;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2.5) * 0.15;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1200;
+        filter.Q.value = 0.8;
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start(now);
+      } catch (e) {}
+    }
+
+    // Snow generation
+    function createSnow() {
+      const snow = document.getElementById('snow');
+      const count = Math.min(55, Math.floor(window.innerWidth / 18));
+
+      for (let i = 0; i < count; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snowflake';
+        const size = Math.random() * 3.5 + 1.2;
+        flake.style.width = size + 'px';
+        flake.style.height = size + 'px';
+        flake.style.left = Math.random() * 100 + '%';
+        flake.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+        flake.style.animationDuration = (Math.random() * 12 + 10) + 's';
+        flake.style.animationDelay = (Math.random() * 15) + 's';
+        flake.style.opacity = Math.random() * 0.5 + 0.3;
+        snow.appendChild(flake);
+      }
+
+      // Occasional ice crystals
+      for (let i = 0; i < 8; i++) {
+        const crystal = document.createElement('div');
+        crystal.className = 'ice-crystal';
+        crystal.style.left = Math.random() * 100 + '%';
+        crystal.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
+        crystal.style.animationDuration = (Math.random() * 14 + 16) + 's';
+        crystal.style.animationDelay = (Math.random() * 20) + 's';
+        crystal.style.transform = `scale(${Math.random() * 0.6 + 0.5})`;
+        snow.appendChild(crystal);
+      }
+    }
+
+    // Occasional close particles
+    function addCloseParticle() {
+      const snow = document.getElementById('snow');
+      if (Math.random() > 0.6) return;
+
+      const flake = document.createElement('div');
+      flake.className = 'snowflake';
+      const size = Math.random() * 4 + 2.5;
+      flake.style.width = size + 'px';
+      flake.style.height = size + 'px';
+      flake.style.left = (30 + Math.random() * 40) + '%';
+      flake.style.setProperty('--drift', (Math.random() * 40 - 20) + 'px');
+      flake.style.animationDuration = (Math.random() * 6 + 5) + 's';
+      flake.style.opacity = 0.75;
+      flake.style.zIndex = 15;
+      snow.appendChild(flake);
+
+      setTimeout(() => flake.remove(), 12000);
+    }
+
+    // Event listeners
+    document.getElementById('tapRight').addEventListener('click', goNext);
+    document.getElementById('tapLeft').addEventListener('click', goPrev);
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') goNext();
+      if (e.key === 'ArrowLeft') goPrev();
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) goNext();
+        else goPrev();
+      }
+    }, { passive: true });
+
+    // Init
+    buildPages();
+    createSnow();
+    setInterval(addCloseParticle, 3500);
+
+    // Show hint briefly
+    setTimeout(() => {
+      document.getElementById('hint').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('hint').classList.remove('visible');
+      }, 4000);
+    }, 1800);
+
+    // Soft ambient wind (very quiet)
+    function startAmbience() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // Extremely quiet filtered noise for wind
+        const bufferSize = audioCtx.sampleRate * 4;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.015;
+        }
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 280;
+
+        const gain = audioCtx.createGain();
+        gain.gain.value = 0.04;
+
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        source.start();
+      } catch (e) {}
+    }
+
+    // Start ambience on first interaction (browser policy)
+    let ambienceStarted = false;
+    function tryStartAmbience() {
+      if (!ambienceStarted) {
+        ambienceStarted = true;
+        startAmbience();
+      }
+    }
+    document.addEventListener('click', tryStartAmbience, { once: true });
+    document.addEventListener('touchstart', tryStartAmbience, { once: true });
+  </script>
+</body>
+</html>
