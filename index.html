@@ -11,7 +11,6 @@
       --deep-ice: #8eb8cc;
       --paper: #f7f1e3;
       --ink: #2c2c2c;
-      --crystal: rgba(180, 220, 240, 0.55);
     }
 
     * {
@@ -26,43 +25,80 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Georgia', 'Times New Roman', serif;
-      background: linear-gradient(165deg, #c5dce8 0%, #dceaf2 35%, #e8f2f7 70%, #f0f6fa 100%);
+      background: linear-gradient(165deg, #b8d0e0 0%, #cfe0ec 30%, #e0eef5 65%, #edf4f8 100%);
       color: var(--ink);
       touch-action: manipulation;
     }
 
-    /* Soft atmospheric fog + frost vignette */
+    /* Atmospheric fog */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background: 
-        radial-gradient(ellipse at 50% 20%, rgba(255,255,255,0.45) 0%, transparent 55%),
-        radial-gradient(ellipse at 50% 100%, rgba(170, 200, 220, 0.25) 0%, transparent 50%);
+        radial-gradient(ellipse at 50% 18%, rgba(255,255,255,0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(160, 195, 215, 0.3) 0%, transparent 48%);
       pointer-events: none;
       z-index: 1;
     }
 
-    /* Frost edge overlay */
-    body::after {
-      content: '';
+    /* Heavy frost / hoarfrost frame on the edges */
+    .frost-frame {
       position: fixed;
       inset: 0;
-      background: 
-        linear-gradient(to right, rgba(200,230,245,0.15) 0%, transparent 8%, transparent 92%, rgba(200,230,245,0.15) 100%),
-        linear-gradient(to bottom, rgba(220,240,250,0.2) 0%, transparent 12%);
       pointer-events: none;
-      z-index: 2;
+      z-index: 8;
+      background:
+        /* Top hoarfrost */
+        linear-gradient(to bottom, 
+          rgba(255,255,255,0.55) 0%, 
+          rgba(230,245,255,0.25) 4%, 
+          transparent 14%),
+        /* Bottom */
+        linear-gradient(to top, 
+          rgba(220,235,245,0.35) 0%, 
+          transparent 10%),
+        /* Left */
+        linear-gradient(to right, 
+          rgba(240,250,255,0.4) 0%, 
+          rgba(220,240,250,0.15) 5%, 
+          transparent 12%),
+        /* Right */
+        linear-gradient(to left, 
+          rgba(240,250,255,0.4) 0%, 
+          rgba(220,240,250,0.15) 5%, 
+          transparent 12%);
     }
 
-    /* Distant snowy landscape */
+    /* Crystalline frost texture along edges */
+    .frost-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+      opacity: 0.45;
+      mask-image: 
+        linear-gradient(to bottom, black 0%, transparent 18%),
+        linear-gradient(to top, black 0%, transparent 12%),
+        linear-gradient(to right, black 0%, transparent 14%),
+        linear-gradient(to left, black 0%, transparent 14%);
+      -webkit-mask-image: 
+        linear-gradient(to bottom, black 0%, transparent 18%),
+        linear-gradient(to top, black 0%, transparent 12%),
+        linear-gradient(to right, black 0%, transparent 14%),
+        linear-gradient(to left, black 0%, transparent 14%);
+      mask-composite: add;
+      -webkit-mask-composite: source-over;
+    }
+
+    /* Distant landscape */
     .landscape {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 32%;
-      background: linear-gradient(180deg, transparent 0%, rgba(190, 215, 230, 0.35) 45%, rgba(170, 200, 220, 0.55) 100%);
+      height: 34%;
+      background: linear-gradient(180deg, transparent 0%, rgba(185, 210, 225, 0.4) 40%, rgba(165, 195, 215, 0.6) 100%);
       z-index: 0;
       pointer-events: none;
     }
@@ -73,14 +109,32 @@
       bottom: 0;
       left: -10%;
       width: 120%;
-      height: 70%;
+      height: 75%;
       background: 
-        radial-gradient(ellipse 42% 35% at 18% 100%, rgba(185, 210, 225, 0.65) 0%, transparent 70%),
-        radial-gradient(ellipse 55% 42% at 72% 100%, rgba(175, 200, 220, 0.55) 0%, transparent 70%),
-        radial-gradient(ellipse 28% 28% at 48% 100%, rgba(195, 215, 230, 0.45) 0%, transparent 70%);
+        radial-gradient(ellipse 44% 38% at 16% 100%, rgba(200, 220, 235, 0.75) 0%, transparent 70%),
+        radial-gradient(ellipse 55% 45% at 74% 100%, rgba(190, 210, 230, 0.65) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 30% at 46% 100%, rgba(210, 225, 240, 0.5) 0%, transparent 70%);
     }
 
-    /* WebGL snow + crystals canvas */
+    /* Hoarfrost sparkle on ground */
+    .landscape::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background-image: 
+        radial-gradient(1.5px 1.5px at 10% 80%, rgba(255,255,255,0.7) 50%, transparent 100%),
+        radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,0.55) 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 40% 90%, rgba(255,255,255,0.65) 50%, transparent 100%),
+        radial-gradient(1px 1px at 55% 70%, rgba(255,255,255,0.5) 50%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 70% 85%, rgba(255,255,255,0.7) 50%, transparent 100%),
+        radial-gradient(1px 1px at 85% 65%, rgba(255,255,255,0.55) 50%, transparent 100%),
+        radial-gradient(1px 1px at 95% 90%, rgba(255,255,255,0.6) 50%, transparent 100%);
+      opacity: 0.8;
+    }
+
     #snow-canvas {
       position: fixed;
       inset: 0;
@@ -90,7 +144,6 @@
       z-index: 5;
     }
 
-    /* Floating ice crystals (CSS layer for sharp geometric ones) */
     .ice-layer {
       position: fixed;
       inset: 0;
@@ -101,29 +154,29 @@
 
     .crystal {
       position: absolute;
-      width: 10px;
-      height: 10px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(170,215,240,0.4));
+      width: 11px;
+      height: 11px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(160,210,240,0.45));
       clip-path: polygon(50% 0%, 65% 35%, 100% 35%, 70% 57%, 82% 100%, 50% 75%, 18% 100%, 30% 57%, 0% 35%, 35% 35%);
       opacity: 0;
       animation: crystalFall linear infinite;
-      filter: drop-shadow(0 0 2px rgba(200,230,250,0.5));
+      filter: drop-shadow(0 0 3px rgba(190,225,250,0.7));
     }
 
     @keyframes crystalFall {
       0% {
-        transform: translateY(-5vh) rotate(0deg) scale(0.6);
+        transform: translateY(-6vh) rotate(0deg) scale(0.5);
         opacity: 0;
       }
-      12% { opacity: 0.7; }
-      85% { opacity: 0.5; }
+      10% { opacity: 0.8; }
+      80% { opacity: 0.55; }
       100% {
-        transform: translateY(105vh) rotate(220deg) scale(0.9);
+        transform: translateY(106vh) rotate(240deg) scale(0.95);
         opacity: 0;
       }
     }
 
-    /* Book container */
+    /* Book */
     .scene {
       position: relative;
       width: 100%;
@@ -151,24 +204,46 @@
       box-shadow: 
         0 22px 45px -12px rgba(30, 55, 75, 0.38),
         0 8px 18px -5px rgba(30, 55, 75, 0.22),
-        0 0 0 1px rgba(255,255,255,0.18),
-        inset 0 0 0 1px rgba(255,255,255,0.08);
+        0 0 0 1px rgba(255,255,255,0.25);
       border-radius: 2px 7px 7px 2px;
     }
 
-    /* Subtle ice rim on the book */
+    /* Frost rim on book */
     .book-wrapper::before {
       content: '';
       position: absolute;
-      inset: -3px;
-      border-radius: 4px 10px 10px 4px;
-      background: linear-gradient(145deg, rgba(200,230,250,0.35), transparent 40%, transparent 60%, rgba(180,215,240,0.2));
+      inset: -5px;
+      border-radius: 5px 12px 12px 5px;
+      background: 
+        linear-gradient(145deg, 
+          rgba(220,240,255,0.55) 0%, 
+          rgba(200,230,250,0.2) 30%, 
+          transparent 50%,
+          rgba(190,220,240,0.25) 100%);
       z-index: -1;
       pointer-events: none;
-      filter: blur(1px);
+      filter: blur(1.5px);
     }
 
-    /* Book cover base (left side spine feel) */
+    /* Hoarfrost crystals sitting on the book edges */
+    .book-frost {
+      position: absolute;
+      inset: -8px;
+      pointer-events: none;
+      z-index: 25;
+      overflow: visible;
+    }
+
+    .book-frost span {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      background: linear-gradient(135deg, #fff, rgba(180,220,245,0.6));
+      clip-path: polygon(50% 0%, 65% 35%, 100% 35%, 70% 57%, 82% 100%, 50% 75%, 18% 100%, 30% 57%, 0% 35%, 35% 35%);
+      opacity: 0.7;
+      filter: drop-shadow(0 0 2px rgba(200,230,250,0.6));
+    }
+
     .book::before {
       content: '';
       position: absolute;
@@ -257,7 +332,7 @@
       left: 12%;
       width: 76%;
       height: 36px;
-      background: radial-gradient(ellipse, rgba(255,255,255,0.55) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(255,255,255,0.6) 0%, transparent 70%);
       filter: blur(9px);
       z-index: -1;
       pointer-events: none;
@@ -269,20 +344,18 @@
       left: 50%;
       transform: translateX(-50%);
       font-size: 12px;
-      color: #5a7a8a;
+      color: #4a6a7a;
       opacity: 0;
       transition: opacity 1.5s ease;
       z-index: 30;
       pointer-events: none;
       letter-spacing: 0.04em;
-      text-shadow: 0 1px 3px rgba(255,255,255,0.85);
+      text-shadow: 0 1px 3px rgba(255,255,255,0.9);
     }
 
-    .hint.visible {
-      opacity: 0.75;
-    }
+    .hint.visible { opacity: 0.8; }
 
-    /* ===== Response panel – cooler ice UI ===== */
+    /* Response panel */
     .response-overlay {
       position: fixed;
       inset: 0;
@@ -293,8 +366,8 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 1.3s ease;
-      background: rgba(180, 210, 225, 0.28);
-      backdrop-filter: blur(4px);
+      background: rgba(170, 200, 220, 0.3);
+      backdrop-filter: blur(5px);
     }
 
     .response-overlay.visible {
@@ -310,7 +383,7 @@
       padding: 30px 26px 26px;
       box-shadow: 
         0 22px 44px -12px rgba(30, 55, 75, 0.32),
-        0 0 0 1px rgba(180, 215, 235, 0.35),
+        0 0 0 1px rgba(180, 215, 235, 0.4),
         inset 0 1px 0 rgba(255,255,255,0.7);
       transform: translateY(22px) scale(0.97);
       transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
@@ -318,29 +391,28 @@
       overflow: hidden;
     }
 
-    /* Ice crystal corner accents */
     .response-card::before,
     .response-card::after {
       content: '';
       position: absolute;
-      width: 18px;
-      height: 18px;
-      background: linear-gradient(135deg, rgba(200,230,250,0.7), rgba(160,205,230,0.25));
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, rgba(220,240,255,0.85), rgba(160,205,230,0.35));
       clip-path: polygon(50% 0%, 65% 35%, 100% 35%, 70% 57%, 82% 100%, 50% 75%, 18% 100%, 30% 57%, 0% 35%, 35% 35%);
-      opacity: 0.55;
+      opacity: 0.65;
       pointer-events: none;
     }
 
     .response-card::before {
       top: 12px;
       left: 14px;
-      transform: rotate(-15deg) scale(0.85);
+      transform: rotate(-12deg) scale(0.9);
     }
 
     .response-card::after {
       bottom: 12px;
       right: 14px;
-      transform: rotate(25deg) scale(0.7);
+      transform: rotate(22deg) scale(0.75);
     }
 
     .response-overlay.visible .response-card {
@@ -374,34 +446,30 @@
       font-size: 16px;
       padding: 12px 32px;
       border: 1px solid rgba(140, 185, 210, 0.55);
-      background: linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(220,235,245,0.45) 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(220,235,245,0.5) 100%);
       color: #243038;
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.22s ease;
       min-width: 100px;
       box-shadow: 0 2px 8px rgba(100, 150, 180, 0.12);
-      letter-spacing: 0.02em;
     }
 
     .response-btn:hover,
     .response-btn:focus {
-      background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(200,225,240,0.6) 100%);
-      border-color: rgba(120, 175, 205, 0.75);
-      box-shadow: 0 4px 14px rgba(100, 160, 190, 0.2);
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(200,225,240,0.65) 100%);
+      border-color: rgba(120, 175, 205, 0.8);
+      box-shadow: 0 4px 14px rgba(100, 160, 190, 0.22);
       outline: none;
       transform: translateY(-1px);
     }
 
-    .response-btn:active {
-      transform: translateY(0) scale(0.97);
-    }
+    .response-btn:active { transform: translateY(0) scale(0.97); }
 
     .response-or {
       font-size: 12px;
       color: #7a8a95;
       margin-bottom: 11px;
-      letter-spacing: 0.03em;
     }
 
     .response-textarea {
@@ -427,9 +495,7 @@
       box-shadow: 0 0 0 3px rgba(160, 205, 230, 0.2);
     }
 
-    .response-textarea::placeholder {
-      color: #9aabba;
-    }
+    .response-textarea::placeholder { color: #9aabba; }
 
     .response-send {
       font-family: Georgia, 'Times New Roman', serif;
@@ -441,7 +507,6 @@
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.22s ease;
-      letter-spacing: 0.02em;
       box-shadow: 0 2px 10px rgba(100, 150, 180, 0.15);
     }
 
@@ -458,14 +523,18 @@
 
     .response-thanks {
       display: none;
-      font-size: 15.5px;
+      font-size: 16px;
       color: #2e3a42;
-      line-height: 1.65;
-      padding: 16px 8px 6px;
+      line-height: 1.7;
+      padding: 18px 10px 8px;
     }
 
-    .response-thanks.visible {
-      display: block;
+    .response-thanks.visible { display: block; }
+
+    .response-thanks .chosen {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #1e3038;
     }
 
     .close-response {
@@ -482,34 +551,18 @@
       z-index: 2;
     }
 
-    .close-response:hover {
-      color: #5a6a75;
-    }
+    .close-response:hover { color: #5a6a75; }
 
     @media (max-height: 600px) {
-      .book-wrapper {
-        height: min(72vh, 460px);
-      }
-      .page-content {
-        font-size: clamp(13px, 3.3vw, 14.5px);
-        line-height: 1.58;
-      }
+      .book-wrapper { height: min(72vh, 460px); }
+      .page-content { font-size: clamp(13px, 3.3vw, 14.5px); line-height: 1.58; }
     }
 
     @media (max-width: 380px) {
-      .page {
-        padding: 6.5% 7% 6.5% 9.5%;
-      }
-      .page-content {
-        font-size: 13.8px;
-      }
-      .response-card {
-        padding: 26px 18px 22px;
-      }
-      .response-btn {
-        padding: 11px 24px;
-        min-width: 88px;
-      }
+      .page { padding: 6.5% 7% 6.5% 9.5%; }
+      .page-content { font-size: 13.8px; }
+      .response-card { padding: 26px 18px 22px; }
+      .response-btn { padding: 11px 24px; min-width: 88px; }
     }
   </style>
 </head>
@@ -517,9 +570,11 @@
   <div class="landscape"></div>
   <canvas id="snow-canvas"></canvas>
   <div class="ice-layer" id="iceLayer"></div>
+  <div class="frost-frame"></div>
 
   <div class="scene">
     <div class="book-wrapper">
+      <div class="book-frost" id="bookFrost"></div>
       <div class="book" id="book"></div>
       <div class="tap-zone tap-left" id="tapLeft"></div>
       <div class="tap-zone tap-right" id="tapRight"></div>
@@ -536,7 +591,7 @@
         <h2>Your answer</h2>
         <p>Yes, no, or whatever you genuinely feel.</p>
 
-        <div class="response-buttons" id="responseButtons">
+        <div class="response-buttons">
           <button class="response-btn" data-answer="Yes">Yes</button>
           <button class="response-btn" data-answer="No">No</button>
         </div>
@@ -554,8 +609,8 @@
       </div>
 
       <div class="response-thanks" id="responseThanks">
-        It’s on its way.<br>
-        Whatever you chose is enough.
+        <div class="chosen" id="chosenAnswer"></div>
+        Noted it in Spotify.
       </div>
     </div>
   </div>
@@ -586,7 +641,6 @@
       pages.forEach((text, i) => {
         const page = document.createElement('div');
         page.className = 'page';
-        page.dataset.index = i;
         page.style.zIndex = pages.length - i;
 
         const content = document.createElement('div');
@@ -625,22 +679,16 @@
 
     function goNext() {
       if (isAnimating) return;
-
       if (currentPage >= pages.length - 1) {
         showResponsePanel();
         return;
       }
-
       isAnimating = true;
       currentPage++;
       updateVisibility();
       playPageSound();
-
       if (currentPage === pages.length - 1) {
-        setTimeout(() => {
-          isAnimating = false;
-          showResponsePanel();
-        }, 1100);
+        setTimeout(() => { isAnimating = false; showResponsePanel(); }, 1100);
       } else {
         setTimeout(() => { isAnimating = false; }, 1100);
       }
@@ -682,46 +730,35 @@
       } catch (e) {}
     }
 
-    // ===== Answer → GitHub Issue =====
-    const REPO_ISSUES = 'https://github.com/kevinmatangong-eng/Letter.For.You/issues/new';
+    // Quiet answer confirmation
+    const responseOverlay = document.getElementById('responseOverlay');
+    const responseText = document.getElementById('responseText');
+    const responseSend = document.getElementById('responseSend');
+    const responseThanks = document.getElementById('responseThanks');
+    const responseForm = document.getElementById('responseForm');
+    const chosenAnswer = document.getElementById('chosenAnswer');
 
-    function sendToRepo(answer) {
-      const title = encodeURIComponent('Answer to the letter');
-      const body = encodeURIComponent(
-        '**Answer:**\n\n' + answer + '\n\n---\n*Sent from the letter book*'
-      );
-      const url = `${REPO_ISSUES}?title=${title}&body=${body}`;
-
-      // Open GitHub issue form (visitor just needs to click "Submit new issue")
-      window.open(url, '_blank', 'noopener');
-
+    function noteAnswer(answer) {
       try {
         localStorage.setItem('letter-for-you-answer', JSON.stringify({
           answer,
           timestamp: new Date().toISOString()
         }));
       } catch (e) {}
-    }
 
-    const responseOverlay = document.getElementById('responseOverlay');
-    const responseText = document.getElementById('responseText');
-    const responseSend = document.getElementById('responseSend');
-    const responseThanks = document.getElementById('responseThanks');
-    const responseForm = document.getElementById('responseForm');
-
-    function showThanks() {
+      // Show the chosen option + quiet Spotify note
+      const display = answer.length > 80 ? answer.slice(0, 80) + '…' : answer;
+      chosenAnswer.textContent = display;
       responseForm.style.display = 'none';
       responseThanks.classList.add('visible');
+
       setTimeout(() => {
         responseOverlay.classList.remove('visible');
-      }, 3800);
+      }, 4200);
     }
 
     document.querySelectorAll('.response-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        sendToRepo(btn.dataset.answer);
-        showThanks();
-      });
+      btn.addEventListener('click', () => noteAnswer(btn.dataset.answer));
     });
 
     responseText.addEventListener('input', () => {
@@ -731,8 +768,7 @@
     responseSend.addEventListener('click', () => {
       const text = responseText.value.trim();
       if (!text) return;
-      sendToRepo(text);
-      showThanks();
+      noteAnswer(text);
     });
 
     document.getElementById('closeResponse').addEventListener('click', () => {
@@ -740,101 +776,87 @@
     });
 
     responseOverlay.addEventListener('click', (e) => {
-      if (e.target === responseOverlay) {
-        responseOverlay.classList.remove('visible');
-      }
+      if (e.target === responseOverlay) responseOverlay.classList.remove('visible');
     });
 
-    // ===== CSS ice crystals =====
+    // Frost crystals on the book
+    function placeBookFrost() {
+      const el = document.getElementById('bookFrost');
+      const spots = [
+        { top: '2%', left: '8%' }, { top: '1%', right: '12%' },
+        { top: '6%', right: '3%' }, { bottom: '4%', left: '5%' },
+        { bottom: '2%', right: '9%' }, { top: '40%', left: '-2%' },
+        { top: '55%', right: '-1%' }, { bottom: '18%', left: '2%' }
+      ];
+      spots.forEach((pos, i) => {
+        const s = document.createElement('span');
+        Object.assign(s.style, pos);
+        s.style.transform = `rotate(${Math.random() * 60 - 30}deg) scale(${0.6 + Math.random() * 0.7})`;
+        s.style.opacity = 0.45 + Math.random() * 0.35;
+        el.appendChild(s);
+      });
+    }
+
+    // Floating crystals
     function spawnCrystals() {
       const layer = document.getElementById('iceLayer');
-      for (let i = 0; i < 14; i++) {
+      for (let i = 0; i < 18; i++) {
         const c = document.createElement('div');
         c.className = 'crystal';
         c.style.left = Math.random() * 100 + '%';
-        c.style.animationDuration = (11 + Math.random() * 14) + 's';
-        c.style.animationDelay = (Math.random() * 16) + 's';
-        c.style.transform = `scale(${0.5 + Math.random() * 0.9})`;
+        c.style.animationDuration = (10 + Math.random() * 15) + 's';
+        c.style.animationDelay = (Math.random() * 14) + 's';
+        c.style.transform = `scale(${0.45 + Math.random() * 1})`;
         layer.appendChild(c);
       }
     }
 
-    // ===== WebGL Snow + soft crystals =====
+    // WebGL snow
     (function initWebGLSnow() {
       const canvas = document.getElementById('snow-canvas');
-      const gl = canvas.getContext('webgl', {
-        alpha: true,
-        premultipliedAlpha: false,
-        antialias: false,
-        depth: false
-      });
+      const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false, depth: false });
       if (!gl) return;
 
       function resize() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        canvas.style.width = w + 'px';
-        canvas.style.height = h + 'px';
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = window.innerWidth + 'px';
+        canvas.style.height = window.innerHeight + 'px';
         gl.viewport(0, 0, canvas.width, canvas.height);
       }
       resize();
       window.addEventListener('resize', resize);
 
       const vsSource = `
-        attribute vec2 a_position;
-        attribute float a_size;
-        attribute float a_alpha;
-        attribute float a_phase;
-        uniform vec2 u_resolution;
-        varying float v_alpha;
-        varying float v_phase;
+        attribute vec2 a_position; attribute float a_size; attribute float a_alpha; attribute float a_phase;
+        uniform vec2 u_resolution; varying float v_alpha; varying float v_phase;
         void main() {
-          vec2 clip = (a_position / u_resolution) * 2.0 - 1.0;
-          clip.y = -clip.y;
-          gl_Position = vec4(clip, 0.0, 1.0);
-          gl_PointSize = a_size;
-          v_alpha = a_alpha;
-          v_phase = a_phase;
-        }
-      `;
+          vec2 clip = (a_position / u_resolution) * 2.0 - 1.0; clip.y = -clip.y;
+          gl_Position = vec4(clip, 0.0, 1.0); gl_PointSize = a_size;
+          v_alpha = a_alpha; v_phase = a_phase;
+        }`;
 
       const fsSource = `
-        precision mediump float;
-        varying float v_alpha;
-        varying float v_phase;
+        precision mediump float; varying float v_alpha; varying float v_phase;
         void main() {
-          vec2 c = gl_PointCoord - 0.5;
-          float dist = length(c);
-          float alpha = smoothstep(0.5, 0.12, dist);
-
-          // Soft crystalline facets
+          vec2 c = gl_PointCoord - 0.5; float dist = length(c);
+          float alpha = smoothstep(0.5, 0.11, dist);
           float angle = atan(c.y, c.x);
-          float facets = 0.75 + 0.25 * cos(angle * 6.0 + v_phase);
+          float facets = 0.72 + 0.28 * cos(angle * 6.0 + v_phase);
           alpha *= facets;
+          vec3 color = mix(vec3(0.86, 0.93, 0.99), vec3(1.0), 0.5);
+          gl_FragColor = vec4(color, alpha * v_alpha * 0.84);
+        }`;
 
-          // Cool ice tint
-          vec3 color = mix(vec3(0.88, 0.94, 0.99), vec3(1.0), 0.55);
-          gl_FragColor = vec4(color, alpha * v_alpha * 0.82);
-        }
-      `;
-
-      function createShader(type, source) {
-        const s = gl.createShader(type);
-        gl.shaderSource(s, source);
-        gl.compileShader(s);
-        return s;
+      function createShader(type, src) {
+        const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s;
       }
 
-      const vs = createShader(gl.VERTEX_SHADER, vsSource);
-      const fs = createShader(gl.FRAGMENT_SHADER, fsSource);
       const program = gl.createProgram();
-      gl.attachShader(program, vs);
-      gl.attachShader(program, fs);
-      gl.linkProgram(program);
-      gl.useProgram(program);
+      gl.attachShader(program, createShader(gl.VERTEX_SHADER, vsSource));
+      gl.attachShader(program, createShader(gl.FRAGMENT_SHADER, fsSource));
+      gl.linkProgram(program); gl.useProgram(program);
 
       const aPosition = gl.getAttribLocation(program, 'a_position');
       const aSize = gl.getAttribLocation(program, 'a_size');
@@ -843,140 +865,109 @@
       const uResolution = gl.getUniformLocation(program, 'u_resolution');
 
       const isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 700;
-      const PARTICLE_COUNT = isMobile ? 480 : 860;
+      const N = isMobile ? 500 : 900;
 
       const particles = [];
-      const positions = new Float32Array(PARTICLE_COUNT * 2);
-      const sizes = new Float32Array(PARTICLE_COUNT);
-      const alphas = new Float32Array(PARTICLE_COUNT);
-      const phases = new Float32Array(PARTICLE_COUNT);
+      const positions = new Float32Array(N * 2);
+      const sizes = new Float32Array(N);
+      const alphas = new Float32Array(N);
+      const phases = new Float32Array(N);
 
-      function createParticle(i, resetY = false) {
+      function createParticle(i, resetY) {
         const depth = Math.random();
         particles[i] = {
           x: Math.random() * canvas.width,
-          y: resetY ? -25 - Math.random() * 90 : Math.random() * canvas.height,
+          y: resetY ? -30 - Math.random() * 100 : Math.random() * canvas.height,
           vx: (Math.random() - 0.5) * 0.4,
-          vy: 0.32 + depth * 0.95 + Math.random() * 0.38,
-          size: (1.3 + depth * 5.2 + Math.random() * 1.5) * (window.devicePixelRatio > 1.5 ? 1.12 : 1),
-          alpha: 0.22 + depth * 0.5 + Math.random() * 0.14,
+          vy: 0.3 + depth * 0.95 + Math.random() * 0.4,
+          size: (1.4 + depth * 5.4 + Math.random() * 1.6) * (window.devicePixelRatio > 1.5 ? 1.1 : 1),
+          alpha: 0.24 + depth * 0.5 + Math.random() * 0.15,
           phase: Math.random() * Math.PI * 2,
-          depth,
-          turbulence: 0.28 + Math.random() * 0.75
+          depth, turbulence: 0.3 + Math.random() * 0.7
         };
       }
 
-      for (let i = 0; i < PARTICLE_COUNT; i++) createParticle(i);
+      for (let i = 0; i < N; i++) createParticle(i);
 
       const posBuffer = gl.createBuffer();
       const sizeBuffer = gl.createBuffer();
       const alphaBuffer = gl.createBuffer();
       const phaseBuffer = gl.createBuffer();
 
-      function upload() {
-        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, alphas, gl.DYNAMIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, phases, gl.DYNAMIC_DRAW);
-      }
-
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.clearColor(0, 0, 0, 0);
 
-      let wind = 0, windTarget = 0, gustTimer = 0;
-      let lastTime = performance.now();
+      let wind = 0, windTarget = 0, gustTimer = 0, lastTime = performance.now();
 
       function update(dt) {
         gustTimer -= dt;
-        if (gustTimer <= 0) {
-          windTarget = (Math.random() - 0.5) * 1.2;
-          gustTimer = 2.2 + Math.random() * 5;
-        }
-        wind += (windTarget - wind) * 0.42 * dt;
+        if (gustTimer <= 0) { windTarget = (Math.random() - 0.5) * 1.25; gustTimer = 2 + Math.random() * 5; }
+        wind += (windTarget - wind) * 0.4 * dt;
 
-        const w = canvas.width, h = canvas.height;
-
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
+        for (let i = 0; i < N; i++) {
           const p = particles[i];
-          p.vy += 0.013 * dt;
-          p.vy = Math.min(p.vy, 1.65 + p.depth * 1.35);
-
-          const turb = Math.sin(p.phase + performance.now() * 0.00115 * p.turbulence) * 0.48 * p.turbulence;
-          p.vx += (wind * (0.38 + p.depth * 0.62) + turb - p.vx) * 0.82 * dt;
-
+          p.vy = Math.min(p.vy + 0.013 * dt, 1.7 + p.depth * 1.3);
+          const turb = Math.sin(p.phase + performance.now() * 0.0011 * p.turbulence) * 0.5 * p.turbulence;
+          p.vx += (wind * (0.4 + p.depth * 0.6) + turb - p.vx) * 0.8 * dt;
           p.x += p.vx * 60 * dt;
           p.y += p.vy * 60 * dt;
-          p.phase += 0.85 * dt * p.turbulence;
+          p.phase += 0.9 * dt * p.turbulence;
 
           let a = p.alpha;
-          if (p.y < 45) a *= p.y / 45;
+          if (p.y < 50) a *= p.y / 50;
 
-          if (p.y > h + 35 || p.x < -50 || p.x > w + 50) {
-            createParticle(i, true);
-            continue;
+          if (p.y > canvas.height + 40 || p.x < -60 || p.x > canvas.width + 60) {
+            createParticle(i, true); continue;
           }
 
-          positions[i * 2] = p.x;
-          positions[i * 2 + 1] = p.y;
-          sizes[i] = p.size;
-          alphas[i] = a;
-          phases[i] = p.phase;
+          positions[i * 2] = p.x; positions[i * 2 + 1] = p.y;
+          sizes[i] = p.size; alphas[i] = a; phases[i] = p.phase;
         }
       }
 
       function render() {
         const now = performance.now();
-        const dt = Math.min((now - lastTime) / 1000, 0.05);
+        update(Math.min((now - lastTime) / 1000, 0.05));
         lastTime = now;
-        update(dt);
 
         gl.uniform2f(uResolution, canvas.width, canvas.height);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, positions);
-        gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, sizes);
-        gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, alphas);
-        gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, phases);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(aPosition);
         gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(aSize);
         gl.vertexAttribPointer(aSize, 1, gl.FLOAT, false, 0, 0);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, alphas, gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(aAlpha);
         gl.vertexAttribPointer(aAlpha, 1, gl.FLOAT, false, 0, 0);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, phases, gl.DYNAMIC_DRAW);
         gl.enableVertexAttribArray(aPhase);
         gl.vertexAttribPointer(aPhase, 1, gl.FLOAT, false, 0, 0);
 
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.drawArrays(gl.POINTS, 0, PARTICLE_COUNT);
+        gl.drawArrays(gl.POINTS, 0, N);
         requestAnimationFrame(render);
       }
 
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        const p = particles[i];
-        positions[i * 2] = p.x;
-        positions[i * 2 + 1] = p.y;
-        sizes[i] = p.size;
-        alphas[i] = p.alpha;
-        phases[i] = p.phase;
+      for (let i = 0; i < N; i++) {
+        positions[i * 2] = particles[i].x;
+        positions[i * 2 + 1] = particles[i].y;
+        sizes[i] = particles[i].size;
+        alphas[i] = particles[i].alpha;
+        phases[i] = particles[i].phase;
       }
-      upload();
       requestAnimationFrame(render);
     })();
 
-    // Events
     document.getElementById('tapRight').addEventListener('click', goNext);
     document.getElementById('tapLeft').addEventListener('click', goPrev);
 
@@ -986,19 +977,14 @@
     });
 
     let touchStartX = 0;
-    document.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
+    document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
     document.addEventListener('touchend', (e) => {
       const diff = e.changedTouches[0].screenX - touchStartX;
-      if (Math.abs(diff) > 50) {
-        if (diff < 0) goNext();
-        else goPrev();
-      }
+      if (Math.abs(diff) > 50) diff < 0 ? goNext() : goPrev();
     }, { passive: true });
 
     buildPages();
+    placeBookFrost();
     spawnCrystals();
 
     setTimeout(() => {
@@ -1014,26 +1000,18 @@
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.014;
         const source = audioCtx.createBufferSource();
-        source.buffer = buffer;
-        source.loop = true;
+        source.buffer = buffer; source.loop = true;
         const filter = audioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 260;
-        const gain = audioCtx.createGain();
-        gain.gain.value = 0.035;
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
+        filter.type = 'lowpass'; filter.frequency.value = 250;
+        const gain = audioCtx.createGain(); gain.gain.value = 0.035;
+        source.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
         source.start();
       } catch (e) {}
     }
 
     let ambienceStarted = false;
     function tryStartAmbience() {
-      if (!ambienceStarted) {
-        ambienceStarted = true;
-        startAmbience();
-      }
+      if (!ambienceStarted) { ambienceStarted = true; startAmbience(); }
     }
     document.addEventListener('click', tryStartAmbience, { once: true });
     document.addEventListener('touchstart', tryStartAmbience, { once: true });
