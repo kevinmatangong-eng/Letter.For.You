@@ -227,6 +227,184 @@
       opacity: 0.7;
     }
 
+    /* ===== Response panel ===== */
+    .response-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.4s ease;
+      background: rgba(210, 225, 235, 0.25);
+      backdrop-filter: blur(2px);
+    }
+
+    .response-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .response-card {
+      width: min(90vw, 380px);
+      background: var(--paper);
+      background-image: 
+        linear-gradient(90deg, rgba(0,0,0,0.025) 0%, transparent 8%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      border-radius: 3px 8px 8px 3px;
+      padding: 32px 28px 28px;
+      box-shadow: 
+        0 20px 40px -10px rgba(30, 50, 70, 0.28),
+        0 8px 16px -4px rgba(30, 50, 70, 0.15);
+      transform: translateY(18px);
+      transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+      text-align: center;
+    }
+
+    .response-overlay.visible .response-card {
+      transform: translateY(0);
+    }
+
+    .response-card h2 {
+      font-size: 16px;
+      font-weight: normal;
+      color: #3a3a3a;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .response-card p {
+      font-size: 13.5px;
+      color: #6a655c;
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .response-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .response-btn {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 15px;
+      padding: 10px 28px;
+      border: 1px solid #c8bfa8;
+      background: rgba(255,255,255,0.45);
+      color: #2c2c2c;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+      min-width: 90px;
+    }
+
+    .response-btn:hover,
+    .response-btn:focus {
+      background: rgba(255,255,255,0.75);
+      border-color: #a89f88;
+      outline: none;
+    }
+
+    .response-btn:active {
+      transform: scale(0.97);
+    }
+
+    .response-or {
+      font-size: 12.5px;
+      color: #8a8070;
+      margin-bottom: 12px;
+    }
+
+    .response-textarea {
+      width: 100%;
+      min-height: 72px;
+      max-height: 120px;
+      resize: vertical;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: #2a2a2a;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid #d0c6b0;
+      border-radius: 3px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .response-textarea:focus {
+      border-color: #a89f88;
+    }
+
+    .response-textarea::placeholder {
+      color: #9a9080;
+    }
+
+    .response-send {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 13.5px;
+      padding: 8px 22px;
+      border: 1px solid #c8bfa8;
+      background: rgba(255,255,255,0.4);
+      color: #3a3a3a;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+
+    .response-send:hover {
+      background: rgba(255,255,255,0.7);
+    }
+
+    .response-send:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .response-thanks {
+      display: none;
+      font-size: 15px;
+      color: #3a3a3a;
+      line-height: 1.6;
+      padding: 12px 0 4px;
+    }
+
+    .response-thanks.visible {
+      display: block;
+    }
+
+    .response-form.hidden,
+    .response-buttons.hidden,
+    .response-or.hidden {
+      display: none;
+    }
+
+    .close-response {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 18px;
+      color: #9a9080;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      line-height: 1;
+    }
+
+    .close-response:hover {
+      color: #6a655c;
+    }
+
+    .response-card {
+      position: relative;
+    }
+
     /* Responsive adjustments */
     @media (max-height: 600px) {
       .book-wrapper {
@@ -244,6 +422,9 @@
       }
       .page-content {
         font-size: 14.5px;
+      }
+      .response-card {
+        padding: 26px 20px 22px;
       }
     }
   </style>
@@ -263,6 +444,39 @@
   </div>
 
   <div class="hint" id="hint">Tap the right side to turn the page</div>
+
+  <!-- Quiet response after the letter -->
+  <div class="response-overlay" id="responseOverlay">
+    <div class="response-card">
+      <button class="close-response" id="closeResponse" aria-label="Close">×</button>
+
+      <div id="responseForm">
+        <h2>Your answer</h2>
+        <p>You can say yes, no, or write whatever feels true.</p>
+
+        <div class="response-buttons" id="responseButtons">
+          <button class="response-btn" data-answer="yes">Yes</button>
+          <button class="response-btn" data-answer="no">No</button>
+        </div>
+
+        <div class="response-or">or write it in your own words</div>
+
+        <textarea
+          class="response-textarea"
+          id="responseText"
+          placeholder="Whatever you genuinely feel…"
+          maxlength="1200"
+        ></textarea>
+
+        <button class="response-send" id="responseSend" disabled>Leave this answer</button>
+      </div>
+
+      <div class="response-thanks" id="responseThanks">
+        It’s received.<br>
+        Whatever you chose is enough.
+      </div>
+    </div>
+  </div>
 
   <script>
     const pages = [
@@ -284,6 +498,7 @@
     const book = document.getElementById('book');
     let currentPage = 0;
     let isAnimating = false;
+    let responseShown = false;
 
     // Create pages (stacked, top page is highest z)
     function buildPages() {
@@ -320,13 +535,38 @@
       });
     }
 
+    function showResponsePanel() {
+      if (responseShown) return;
+      // Small delay so the last page can settle
+      setTimeout(() => {
+        document.getElementById('responseOverlay').classList.add('visible');
+        responseShown = true;
+      }, 1600);
+    }
+
     function goNext() {
-      if (isAnimating || currentPage >= pages.length - 1) return;
+      if (isAnimating) return;
+
+      if (currentPage >= pages.length - 1) {
+        // Already on last page — offer the response
+        showResponsePanel();
+        return;
+      }
+
       isAnimating = true;
       currentPage++;
       updateVisibility();
       playPageSound();
-      setTimeout(() => { isAnimating = false; }, 1150);
+
+      if (currentPage === pages.length - 1) {
+        // Reached the final page — later show the quiet option
+        setTimeout(() => {
+          isAnimating = false;
+          showResponsePanel();
+        }, 1150);
+      } else {
+        setTimeout(() => { isAnimating = false; }, 1150);
+      }
     }
 
     function goPrev() {
@@ -371,6 +611,64 @@
     }
 
     // =====================
+    // Response handling
+    // =====================
+    const responseOverlay = document.getElementById('responseOverlay');
+    const responseText = document.getElementById('responseText');
+    const responseSend = document.getElementById('responseSend');
+    const responseThanks = document.getElementById('responseThanks');
+    const responseForm = document.getElementById('responseForm');
+
+    function saveAnswer(answer) {
+      try {
+        localStorage.setItem('letter-for-you-answer', JSON.stringify({
+          answer: answer,
+          timestamp: new Date().toISOString()
+        }));
+      } catch (e) {}
+    }
+
+    function showThanks() {
+      responseForm.style.display = 'none';
+      responseThanks.classList.add('visible');
+
+      // Soft close after a quiet moment
+      setTimeout(() => {
+        responseOverlay.classList.remove('visible');
+      }, 4200);
+    }
+
+    document.querySelectorAll('.response-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const answer = btn.dataset.answer;
+        saveAnswer(answer);
+        showThanks();
+      });
+    });
+
+    responseText.addEventListener('input', () => {
+      responseSend.disabled = responseText.value.trim().length === 0;
+    });
+
+    responseSend.addEventListener('click', () => {
+      const text = responseText.value.trim();
+      if (!text) return;
+      saveAnswer(text);
+      showThanks();
+    });
+
+    document.getElementById('closeResponse').addEventListener('click', () => {
+      responseOverlay.classList.remove('visible');
+    });
+
+    // Allow closing by tapping outside the card
+    responseOverlay.addEventListener('click', (e) => {
+      if (e.target === responseOverlay) {
+        responseOverlay.classList.remove('visible');
+      }
+    });
+
+    // =====================
     // WebGL Snow System
     // =====================
     (function initWebGLSnow() {
@@ -383,12 +681,10 @@
       });
 
       if (!gl) {
-        // Fallback: keep a very light CSS snow if WebGL unavailable
         console.warn('WebGL not available');
         return;
       }
 
-      // High-DPI support (capped for performance)
       function resize() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const w = window.innerWidth;
@@ -402,7 +698,6 @@
       resize();
       window.addEventListener('resize', resize);
 
-      // Shaders
       const vsSource = `
         attribute vec2 a_position;
         attribute float a_size;
@@ -416,13 +711,10 @@
         varying float v_phase;
 
         void main() {
-          // Convert pixel coords to clip space
           vec2 clip = (a_position / u_resolution) * 2.0 - 1.0;
-          clip.y = -clip.y; // flip Y
-
+          clip.y = -clip.y;
           gl_Position = vec4(clip, 0.0, 1.0);
           gl_PointSize = a_size;
-
           v_alpha = a_alpha;
           v_phase = a_phase;
         }
@@ -434,20 +726,12 @@
         varying float v_phase;
 
         void main() {
-          // Soft circular flake with slight crystalline variation
           vec2 c = gl_PointCoord - 0.5;
           float dist = length(c);
-
-          // Soft falloff
           float alpha = smoothstep(0.5, 0.15, dist);
-
-          // Very subtle internal structure (not sparkly)
           float crystal = 0.85 + 0.15 * sin(v_phase * 6.28318 + dist * 12.0);
           alpha *= crystal;
-
-          // Soft white with faint cool tint
           vec3 color = mix(vec3(0.92, 0.96, 0.99), vec3(1.0), 0.6);
-
           gl_FragColor = vec4(color, alpha * v_alpha * 0.85);
         }
       `;
@@ -478,7 +762,6 @@
 
       gl.useProgram(program);
 
-      // Attribute / uniform locations
       const aPosition = gl.getAttribLocation(program, 'a_position');
       const aSize = gl.getAttribLocation(program, 'a_size');
       const aAlpha = gl.getAttribLocation(program, 'a_alpha');
@@ -486,11 +769,9 @@
       const uResolution = gl.getUniformLocation(program, 'u_resolution');
       const uTime = gl.getUniformLocation(program, 'u_time');
 
-      // Particle count – balanced for mobile + desktop
       const isMobile = /Mobi|Android/i.test(navigator.userAgent) || window.innerWidth < 700;
       const PARTICLE_COUNT = isMobile ? 420 : 780;
 
-      // Particle data (CPU-side physics)
       const particles = [];
       const positions = new Float32Array(PARTICLE_COUNT * 2);
       const sizes = new Float32Array(PARTICLE_COUNT);
@@ -498,7 +779,7 @@
       const phases = new Float32Array(PARTICLE_COUNT);
 
       function createParticle(i, resetY = false) {
-        const depth = Math.random(); // 0 = far, 1 = close
+        const depth = Math.random();
         const sizeBase = 1.2 + depth * 4.8 + Math.random() * 1.4;
 
         particles[i] = {
@@ -519,7 +800,6 @@
         createParticle(i);
       }
 
-      // Buffers
       const posBuffer = gl.createBuffer();
       const sizeBuffer = gl.createBuffer();
       const alphaBuffer = gl.createBuffer();
@@ -528,31 +808,24 @@
       function uploadBuffers() {
         gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.DYNAMIC_DRAW);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, alphas, gl.DYNAMIC_DRAW);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, phases, gl.DYNAMIC_DRAW);
       }
 
-      // Enable blending for soft flakes
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.clearColor(0, 0, 0, 0);
 
-      // Wind state (gentle, slowly varying)
       let wind = 0;
       let windTarget = 0;
       let gustTimer = 0;
-
       let lastTime = performance.now();
 
       function update(dt) {
-        // Slow wind variation
         gustTimer -= dt;
         if (gustTimer <= 0) {
           windTarget = (Math.random() - 0.5) * 1.1;
@@ -566,25 +839,20 @@
         for (let i = 0; i < PARTICLE_COUNT; i++) {
           const p = particles[i];
 
-          // Gravity + size-based terminal velocity feel
-          p.vy += 0.012 * dt; // slight acceleration
+          p.vy += 0.012 * dt;
           p.vy = Math.min(p.vy, 1.6 + p.depth * 1.4);
 
-          // Wind + turbulence
           const turb = Math.sin(p.phase + performance.now() * 0.0012 * p.turbulence) * 0.45 * p.turbulence;
           p.vx += (wind * (0.4 + p.depth * 0.6) + turb - p.vx) * 0.8 * dt;
 
           p.x += p.vx * 60 * dt;
           p.y += p.vy * 60 * dt;
-
           p.phase += 0.8 * dt * p.turbulence;
           p.life += dt;
 
-          // Soft fade in near top
           let a = p.alpha;
           if (p.y < 40) a *= p.y / 40;
 
-          // Recycle when off screen
           if (p.y > h + 30 || p.x < -40 || p.x > w + 40) {
             createParticle(i, true);
             continue;
@@ -600,7 +868,7 @@
 
       function render(time) {
         const now = performance.now();
-        const dt = Math.min((now - lastTime) / 1000, 0.05); // clamp large steps
+        const dt = Math.min((now - lastTime) / 1000, 0.05);
         lastTime = now;
 
         update(dt);
@@ -608,20 +876,15 @@
         gl.uniform2f(uResolution, canvas.width, canvas.height);
         gl.uniform1f(uTime, time * 0.001);
 
-        // Upload
         gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, positions);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, sizes);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, alphaBuffer);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, alphas);
-
         gl.bindBuffer(gl.ARRAY_BUFFER, phaseBuffer);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, phases);
 
-        // Attributes
         gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
         gl.enableVertexAttribArray(aPosition);
         gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
@@ -644,7 +907,6 @@
         requestAnimationFrame(render);
       }
 
-      // Initial upload
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         const p = particles[i];
         positions[i * 2] = p.x;
@@ -662,13 +924,11 @@
     document.getElementById('tapRight').addEventListener('click', goNext);
     document.getElementById('tapLeft').addEventListener('click', goPrev);
 
-    // Keyboard support
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight' || e.key === ' ') goNext();
       if (e.key === 'ArrowLeft') goPrev();
     });
 
-    // Touch swipe support
     let touchStartX = 0;
     document.addEventListener('touchstart', (e) => {
       touchStartX = e.changedTouches[0].screenX;
@@ -685,7 +945,6 @@
     // Init
     buildPages();
 
-    // Show hint briefly
     setTimeout(() => {
       document.getElementById('hint').classList.add('visible');
       setTimeout(() => {
@@ -693,7 +952,6 @@
       }, 4000);
     }, 1800);
 
-    // Soft ambient wind (very quiet)
     function startAmbience() {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
